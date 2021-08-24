@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import com.example.quiz.databinding.ActivityMainBinding
-import java.net.URI
 
 class MainActivity : AppCompatActivity() {
    private lateinit var binding: ActivityMainBinding
@@ -17,9 +16,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TODO: Get data from JSON
-        val data = getSampleData(resources)
-        // Log.d("JSON", data.toString())
 
         // TODO: activity_main (Layout)
         val start = findViewById<TextView>(R.id.startButton)

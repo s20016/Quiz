@@ -7,7 +7,8 @@
     <!-- activity_quiz-->
     <string name="quiz_question">A random question is generated here!</string>
     <string name="quiz_answer">Answer</string>
-    <string name="quiz_score">SCORE</string>
+    <string name="quiz_score">SCORE: 0</string>
+    <string name="quiz_timer">00:10</string>
     <string name="quiz_points">2 pts.</string>
 
 </resources>
