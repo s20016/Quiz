@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import com.example.quiz.databinding.ActivityMainBinding
 
@@ -16,9 +17,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        // TODO: activity_main (Layout)
-        val start = findViewById<TextView>(R.id.startButton)
+        val start = findViewById<Button>(R.id.startButton)
 
         start.setOnClickListener {
             Intent (this, QuizActivity::class.java).also {
