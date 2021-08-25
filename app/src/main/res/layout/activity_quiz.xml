@@ -13,7 +13,7 @@
         android:layout_height="325dp"
         android:elevation="1dp"
         android:fontFamily="@font/bree_serif"
-        android:paddingHorizontal="15sp"
+        android:paddingHorizontal="22sp"
         android:text="@string/quiz_question"
         android:textAlignment="center"
         android:gravity="center"
@@ -31,17 +31,17 @@
         android:layout_margin="5dp"
         android:backgroundTint="@color/color05"
         android:fontFamily="@font/bree_serif"
+        android:gravity="center"
         android:text="@string/quiz_answer"
         android:textColor="@color/color03"
-        android:gravity="center"
         android:textSize="20sp"
         app:cornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintHorizontal_bias="0.521"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/quizQuestion"
-        app:layout_constraintVertical_bias="0.573" />
+        app:layout_constraintVertical_bias="0.596" />
 
     <Button
         android:id="@+id/quizOption2"
@@ -100,14 +100,17 @@
     <ImageView
         android:id="@+id/quizBG"
         android:layout_width="wrap_content"
-        android:layout_height="465dp"
-        android:layout_marginBottom="324dp"
+        android:layout_height="330dp"
+        android:layout_marginBottom="332dp"
         android:elevation="0dp"
+        android:scaleType="center"
         android:textAlignment="inherit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/quizQuestion"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/quiz_qbg" />
 
     <TextView
@@ -139,5 +142,17 @@
         app:layout_constraintStart_toEndOf="@+id/quizScore"
         app:layout_constraintTop_toBottomOf="@+id/quizQuestion"
         app:layout_constraintVertical_bias="0.518" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/test"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="60dp"-->
+<!--        android:text="TextView"-->
+<!--        android:textSize="30sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.498"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

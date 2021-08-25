@@ -10,5 +10,12 @@
     <string name="quiz_score">SCORE: 0</string>
     <string name="quiz_timer">00:10</string>
     <string name="quiz_points">2 pts.</string>
+    
+    <!-- activity_result -->
+    <string name="result_message">Great Job!</string>
+    <string name="result_message2">You Scored</string>
+    <string name="result_score">10 / 10</string>
+    <string name="result_home">Main Menu</string>
+    <string name="result_restart">Play Again!</string>
 
 </resources>
