@@ -1,8 +1,7 @@
 ## Android I
-> Android I 期末試験
+> Android I 期末試験  
 > Midterm Exam: Create a Quiz Application
 
-#
 Notes:
   - Images used in the application are from [unsplash.com](https://unsplash.com/) and [pexels.com](https://www.pexels.com/).
   - Icons and illustrations from [Lunacy](https://icons8.com/lunacy).
