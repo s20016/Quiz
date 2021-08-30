@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.129"
-        app:srcCompat="@drawable/start_image" />
+        app:srcCompat="@drawable/main_image" />
 
     <TextView
         android:id="@+id/startText01"
@@ -51,8 +51,8 @@
 
     <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="61dp"
-        android:layout_height="69dp"
+        android:layout_width="35dp"
+        android:layout_height="24dp"
         android:background="@color/color03"
         android:onClick="openGithub"
         android:scaleType="centerInside"
@@ -60,7 +60,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/github_icon" />
+        app:layout_constraintVertical_bias="0.963"
+        app:srcCompat="@drawable/main_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
