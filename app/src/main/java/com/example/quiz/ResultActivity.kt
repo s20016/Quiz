@@ -18,7 +18,6 @@ class ResultActivity : AppCompatActivity() {
         val resultHome = findViewById<Button>(R.id.resultHome)
         val resultRestart = findViewById<Button>(R.id.resultRestart)
 
-        val intent = getIntent()
         val score = intent.getStringExtra("SCORE")
         val message = intent.getStringExtra("MESSAGE")
 

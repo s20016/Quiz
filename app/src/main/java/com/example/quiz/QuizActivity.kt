@@ -1,8 +1,12 @@
 package com.example.quiz
 
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils.replace
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import java.io.BufferedReader
@@ -11,12 +15,7 @@ import java.io.InputStreamReader
 class QuizActivity : AppCompatActivity() {
 
     private var question = 0; private var score = 0;
-    private val dataQuestion = mutableListOf<String>()
-    private val dataImage = mutableListOf<String>()
-    private val dataOption1 = mutableListOf<String>()
-    private val dataOption2 = mutableListOf<String>()
-    private val dataOption3 = mutableListOf<String>()
-    private val dataOption4 = mutableListOf<String>()
+    private val dataQuestion = mutableListOf<List<String>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,18 +24,17 @@ class QuizActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         // TODO: Get data from CSV
-        val data = BufferedReader(InputStreamReader(assets.open("s20016.csv")))
+        val csv = "s20016.csv"
+        val data = BufferedReader(InputStreamReader(assets.open(csv)))
         var line: String?
 
         while (data.readLine().also { line = it } != null) {
             val row: MutableList<String> = line!!.split(",") as MutableList<String>
-
-            dataQuestion.add(row[0]); dataImage.add(row[1])
-            dataOption1.add(row[2]); dataOption2.add(row[3])
-            dataOption3.add(row[4]); dataOption4.add(row[5])
+            dataQuestion.add(row)
         }
 
-        // Shuffle
+        dataQuestion.removeAt(0)
+        dataQuestion.shuffle()
 
         gameOn()
     }
@@ -48,7 +46,7 @@ class QuizActivity : AppCompatActivity() {
             in 8..10 -> "Great Job!"
             in 5..7 -> "Fantastic!"
             in 4..6 -> "Nice!"
-            else -> "Oh no!"
+            else -> "Try Again!"
         }; return Pair(points, message)
     }
 
@@ -61,11 +59,21 @@ class QuizActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun checkOption(choice: Int): Boolean {
+        return (choice == 2)
+    }
+
+    private fun checkImage(imageSource: String): Int {
+        return if (imageSource != "") {
+            resources.getIdentifier(imageSource, "drawable", applicationInfo.name)
+        } else resources.getIdentifier("quiz_qbg", "drawable", applicationInfo.name)
+    }
+
     private fun gameOn() {
         question++
 
         // QuizActivity ID
-        val questionNumber = question
+        val questionNumber = question - 1
         val quizQuestion = findViewById<TextView>(R.id.quizQuestion)
         val quizImage = findViewById<ImageView>(R.id.quizBG)
         val quizOption1 = findViewById<TextView>(R.id.quizOption1)
@@ -73,23 +81,52 @@ class QuizActivity : AppCompatActivity() {
         val quizOption3 = findViewById<TextView>(R.id.quizOption3)
         val quizOption4 = findViewById<TextView>(R.id.quizOption4)
         val quizScore = findViewById<TextView>(R.id.quizScore)
-        val quizTimer = findViewById<TextView>(R.id.quizTimer)
 
         // (MAIN) Question and Options
-        quizQuestion.text = dataQuestion[questionNumber]
-        quizOption1.text = dataOption1[questionNumber]
-        quizOption2.text = dataOption2[questionNumber]
-        quizOption3.text = dataOption3[questionNumber]
-        quizOption4.text = dataOption4[questionNumber]
+        val choices = mutableListOf(2, 3, 4, 5); choices.shuffle()
+        val choice1 = choices[0]
+        val choice2 = choices[1]
+        val choice3 = choices[2]
+        val choice4 = choices[3]
 
-        // (MAIN) Score and Timer
+//        Log.d("TAG", dataQuestion[questionNumber][1].toString())
+
+        val imageData = dataQuestion[questionNumber][1]
+            .replace(".png", "")
+            .replace(".xml", "")
+
+        val questionImage = resources.getIdentifier(imageData, "drawable", packageName)
+
+        quizImage.setImageResource(questionImage)
+        quizQuestion.text = dataQuestion[questionNumber][0]
+        quizOption1.text = dataQuestion[questionNumber][choice1]
+        quizOption2.text = dataQuestion[questionNumber][choice2]
+        quizOption3.text = dataQuestion[questionNumber][choice3]
+        quizOption4.text = dataQuestion[questionNumber][choice4]
+
+        // (MAIN) Score
         val scoreDisplay = "SCORE: $score"
         quizScore.text = scoreDisplay
 
-        // TODO: Setting answer to Option1
-        quizOption1.setOnClickListener { score++; if (question >= 10) setScore() else gameOn() }
-        quizOption2.setOnClickListener { if (question >= 10) setScore() else gameOn() }
-        quizOption3.setOnClickListener { if (question >= 10) setScore() else gameOn() }
-        quizOption4.setOnClickListener { if (question >= 10) setScore() else gameOn() }
+        // Setting answer to Random
+        quizOption1.setOnClickListener {
+            if (checkOption(choice1)) score++
+            if (question >= 10) setScore() else gameOn()
+        }
+
+        quizOption2.setOnClickListener {
+            if (checkOption(choice2)) score++
+            if (question >= 10) setScore() else gameOn()
+        }
+
+        quizOption3.setOnClickListener {
+            if (checkOption(choice3)) score++
+            if (question >= 10) setScore() else gameOn()
+        }
+
+        quizOption4.setOnClickListener {
+            if (checkOption(choice4)) score++
+            if (question >= 10) setScore() else gameOn()
+        }
     }
 }
