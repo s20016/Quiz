@@ -1,4 +1,4 @@
-package com.example.quiz
+package jp.ac.it_college.std.s20016.quiz
 
 import android.content.Intent
 import android.graphics.Color

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.quiz">
+    package="jp.ac.it_college.std.s20016.quiz">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
