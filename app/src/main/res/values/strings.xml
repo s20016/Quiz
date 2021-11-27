@@ -6,11 +6,13 @@
 
     <!-- activity_quiz -->
     <string name="quiz_question">A random question is generated here!</string>
-    <string name="quiz_answer">Answer</string>
-    <string name="quiz_score">SCORE: 0</string>
-    <string name="quiz_timer"></string>
+    <string name="quiz_answer">Answers: 0</string>
+    <string name="quiz_score">SCORE: 0  |  Q: 0/100</string>
+    <string name="quiz_timer">00:00</string>
+    <string name="quiz_choice">Choice sample</string>
     <string name="quiz_points">2 pts.</string>
     <string name="quiz_number">Q1</string>
+    <string name="quiz_nextButton">Next</string>
 
     <!-- activity_result -->
     <string name="result_message">Great Job!</string>
@@ -18,4 +20,5 @@
     <string name="result_score">10 / 10</string>
     <string name="result_home">Main Menu</string>
     <string name="result_restart">Play Again!</string>
+    <string name="quiz_BGDes">BG for quizQuestion</string>
 </resources>

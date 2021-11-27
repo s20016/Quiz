@@ -20,4 +20,11 @@
     <!-- Quiz -->
     <color name="color07">#26000000</color>
 
+    <!--    Quiz II-->
+    <color name="background">#082032</color>
+    <color name="primary">#2C394B</color>
+    <color name="secondary">#334756</color>
+    <color name="secondary2">#0E3858</color>
+    <color name="accent">#FF4C29</color>
+
 </resources>
