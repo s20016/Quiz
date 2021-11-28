@@ -3,6 +3,7 @@
     <string name="app_name">Quiz</string>
     <string name="main_text01">Test your brain with random questions!</string>
     <string name="start_btn">START</string>
+    <string name="main_img">Main img</string>
 
     <!-- activity_quiz -->
     <string name="quiz_question">A random question is generated here!</string>
@@ -12,7 +13,8 @@
     <string name="quiz_choice">Choice sample</string>
     <string name="quiz_points">2 pts.</string>
     <string name="quiz_number">Q1</string>
-    <string name="quiz_nextButton">Next</string>
+    <string name="quiz_nextButton">Check!</string>
+    <string name="quiz_img">Quiz img</string>
 
     <!-- activity_result -->
     <string name="result_message">Great Job!</string>
@@ -20,5 +22,5 @@
     <string name="result_score">10 / 10</string>
     <string name="result_home">Main Menu</string>
     <string name="result_restart">Play Again!</string>
-    <string name="quiz_BGDes">BG for quizQuestion</string>
+    <string name="result_img">Result img</string>
 </resources>

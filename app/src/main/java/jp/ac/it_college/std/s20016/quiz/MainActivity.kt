@@ -2,7 +2,6 @@ package jp.ac.it_college.std.s20016.quiz
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -29,10 +28,6 @@ class MainActivity : AppCompatActivity() {
         
         // TODO: Change color when dataIsSet is true
         binding.startButton.isEnabled = dataIsSet
-
-        if (dataIsSet) {
-            binding.startButton.setBackgroundColor(Color.parseColor("#0E3858"))
-        }
 
         binding.startButton.setOnClickListener {
             Intent (this, QuizActivity::class.java).also {
@@ -89,9 +84,9 @@ class MainActivity : AppCompatActivity() {
                     // Saving Api version
                     sharedEdit.putString("ApiVersion", resBody.version).apply()
                     binding.tvVersion.text = resultVer
-
                 } catch (e: Exception) {
-                    response.errorBody()?.close()
+                    e.printStackTrace()
+                    Log.d("Fetch TEST", "onResponse: ApiVersion Fetch error")
                 } finally {
                     response.errorBody()?.close()
                 }
@@ -139,6 +134,9 @@ class MainActivity : AppCompatActivity() {
                         sharedEdit.putString(dataApiId, jsonData).apply()
                     }
                 } catch (e: Exception) {
+                    e.printStackTrace()
+                    Log.d("FETCH TEST", "onResponse: ApiData Fetch error")
+                } finally {
                     response.errorBody()?.close()
                 }
             }
@@ -148,10 +146,4 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
-//    fun openGithub(view: View) {
-//        val openInBrowser = Intent(Intent.ACTION_VIEW)
-//        openInBrowser.data = Uri.parse("https://github.com/s20016/Quiz")
-//        startActivity(openInBrowser)
-//    }
 }

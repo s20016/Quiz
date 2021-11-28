@@ -9,7 +9,6 @@
 
     <TextView
         android:id="@+id/quizQuestion"
-        style="@style/textShadowStyle"
         android:layout_width="match_parent"
         android:layout_height="260dp"
         android:background="@drawable/quiz_question"
@@ -85,7 +84,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="TextContrastCheck" />
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

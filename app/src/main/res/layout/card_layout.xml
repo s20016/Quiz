@@ -9,39 +9,33 @@
     android:layout_marginVertical="5dp"
     app:cardCornerRadius="5dp">
 
-
-    <Button
+    <CheckBox
         android:id="@+id/tvChoice"
-        style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:backgroundTint="@color/secondary2"
+        android:padding="15dp"
         android:text="@string/quiz_choice"
         android:textColor="@color/white"
-        android:backgroundTint="@color/secondary2"
         android:textSize="17sp"
-        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--    <Button-->
+<!--        android:id="@+id/tvChoice"-->
+<!--        style="?android:attr/borderlessButtonStyle"-->
 <!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content">-->
-
-<!--    <Button-->
-<!--            android:id="@+id/tvChoice"-->
-<!--            android:layout_width="@dimen/material_emphasis_high_type"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/quiz_choice"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="17sp"-->
-<!--            android:padding="10dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
-
+<!--        android:layout_height="match_parent"-->
+<!--        android:text="@string/quiz_choice"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:backgroundTint="@color/secondary2"-->
+<!--        android:textSize="17sp"-->
+<!--        android:padding="10dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    
 </androidx.cardview.widget.CardView>
