@@ -26,17 +26,15 @@ class QuizActivity : AppCompatActivity() {
     private val dataAnswers = mutableListOf<Int>()
     private val dataChoices = mutableListOf<List<String>>()
 
-    // User variables
-//    val userChoicesInt = mutableListOf<Int>()
-
     private lateinit var binding: ActivityQuizBinding
     private var layoutManager: RecyclerView.LayoutManager? = null
-//    private var adapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuizBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
 
         supportActionBar?.hide()
 
@@ -46,13 +44,22 @@ class QuizActivity : AppCompatActivity() {
 
     // Retrieve saved data and randomize
     private fun generateQuizSet() {
+        val spinnerPos = intent.getStringExtra("SPINNER_POSITION")
         val dataSharedPref = getSharedPreferences("ApiDataPref", Context.MODE_PRIVATE)
         val apiID = dataSharedPref.all.map { it.key }
 
         dataId.add(apiID.toList())
         dataId[0].shuffled()
 
-        apiQuestionSize = dataId[0].size
+        val pos = when(spinnerPos) {
+            "0" -> 10
+            "1" -> 20
+            "2" -> 30
+            else -> 10
+        }
+
+        apiQuestionSize = pos
+
         for (item in dataId[0]) {
             val rawData = dataSharedPref.getString(item, "")
             val data = Gson().fromJson(rawData, ApiDataItem::class.java)
@@ -64,6 +71,7 @@ class QuizActivity : AppCompatActivity() {
 
 
     // Message and score(points)
+    // TODO: FIx Message
     private fun getResult(score: Int): Pair<String, String> {
         val points = "$score/$apiQuestionSize"
         val q4 = ceil((apiQuestionSize.toDouble() * 1 / 4) * 3).toInt()
@@ -89,40 +97,54 @@ class QuizActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    // Check if user choice is correct
-    private fun checkChoice(
-        userChoices: MutableList<Int>, choiceAnswers: MutableList<Int>): Boolean {
-        val user = userChoices.sort()
-        val data = choiceAnswers.sort()
-        Log.d("CheckChoice: ", "$user, $data")
-        return (user == data)
-    }
-
-    // TODO: RecycleView
-    private fun initiateRVChoices(
-        questionChoices: List<String>, questionAnswers: Int): MutableList<Int> {
-        var userChoiceInt = mutableListOf<Int>()
-
-        layoutManager = LinearLayoutManager(this)
-        binding.rvChoiceItems.layoutManager = layoutManager
-
-        val adapter = RecyclerAdapter(questionChoices, questionAnswers)
-        binding.rvChoiceItems.adapter = adapter
-        adapter.setOnItemClickListener(object : RecyclerAdapter.OnItemClickListener {
-            override fun onItemClick(userChoice: MutableList<Int>) {
-                userChoiceInt = userChoice
-//                if (position !in userChoicesInt) userChoicesInt.add(position)
-//                if (position ) userChoicesInt.clear()
-                Log.d("onItemClick: ", userChoiceInt.toString())
-            }
-        })
-        return userChoiceInt
-    }
-
 
     // Main Game
     private fun gameOn() {
         question++
+
+        // Question and Choices Variables
+        val questionNumber = question - 1
+        val questionQuestion = dataQuestion[questionNumber]
+        val questionChoices = dataChoices[questionNumber].filter { x: String? -> x != "" }
+        val questionAnswers = dataAnswers[questionNumber]
+
+        val realAnswers = questionChoices.take(questionAnswers)
+        val shuffledChoices = questionChoices.shuffled()
+        val shuffledAnswers = mutableListOf<Int>()
+
+        shuffledChoices.forEachIndexed { index, s ->
+            if (s in realAnswers) shuffledAnswers.add(index)
+        }
+
+        // Log shuffled answers
+        Log.d("DataAnswer: ", shuffledAnswers.toString())
+
+        // Assigning data to each ID
+        binding.quizQuestion.text = questionQuestion
+
+        // RecycleView
+        layoutManager = LinearLayoutManager(this)
+        binding.rvChoiceItems.layoutManager = layoutManager
+
+        val adapter = RecyclerAdapter(shuffledChoices, questionAnswers)
+        binding.rvChoiceItems.adapter = adapter
+
+        var userChoicesInt = mutableListOf<Int>()
+        adapter.setOnItemClickListener(object : RecyclerAdapter.OnItemClickListener {
+            override fun onItemClick(userChoice: MutableList<Int>) {
+                userChoicesInt = userChoice
+            }
+        })
+
+        // Score
+        val scoreDisplay =
+            "SCORE: $score  |  Answer(s): $questionAnswers  |  Q: $question/$apiQuestionSize"
+        binding.quizScore.text = scoreDisplay
+
+        // Compare userAnswer and dataAnswer
+        fun compareAnswers(): Boolean {
+            return (userChoicesInt.containsAll(shuffledAnswers))
+        }
 
         // Timer
         var timeLimit = 15000
@@ -138,53 +160,18 @@ class QuizActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
+                Log.d("OnTimeFinish: ", "User: $userChoicesInt, Data: $shuffledAnswers, ${compareAnswers()}")
+
+                if (compareAnswers()) score++
                 if (question >= apiQuestionSize) setScore() else gameOn()
             }
         }; timer.start()
 
-        // Question and Choices Variables
-        val questionNumber = question - 1
-        val questionQuestion = dataQuestion[questionNumber]
-        val questionChoices = dataChoices[questionNumber].filter { x: String? -> x != "" } // [インターネット経由の配信, 市場投入までの時間, セキュリティ, ハードウェアに依存しない]
-        val questionAnswers = dataAnswers[questionNumber]
-
-//        val mapQC = mutableMapOf<Int, String>() // {0=インターネット経由の配信, 1=市場投入までの時間, 2=セキュリティ, 3=ハードウェアに依存しない}
-//        val x = questionChoices.forEachIndexed { i, v -> mapQC[i] = v }
-//
-//        val shuffledMapQC = mapQC.values.shuffled() // [市場投入までの時間, セキュリティ, インターネット経由の配信, ハードウェアに依存しない]
-
-        val realAnswers = questionChoices.take(questionAnswers) // [インターネット経由の配信]
-        val shuffledChoices = questionChoices.shuffled() // [市場投入までの時間, セキュリティ, インターネット経由の配信, ハードウェアに依存しない]
-        val shuffledAnswers = mutableListOf<Int>()
-
-        shuffledChoices.forEachIndexed { index, s ->
-            if (s in realAnswers) shuffledAnswers.add(index)
-        }
-
-//        Log.d("GameON: ", questionChoices.toString())
-//        Log.d("GameON: ", realAnswers.toString())
-//        Log.d("GameON: ", shuffledChoices.toString())
-        Log.d("GameON: ", shuffledAnswers.toString()) // [3, 4]
-
-
-        // Assigning data to each ID
-        binding.quizQuestion.text = questionQuestion
-
-        // RecycleView
-        val userChoices = initiateRVChoices(shuffledChoices, questionAnswers)
-
-        // Score
-        val scoreDisplay =
-            "SCORE: $score  |  Answer(s): $questionAnswers  |  Q: $question/$apiQuestionSize"
-        binding.quizScore.text = scoreDisplay
-
-//        Log.d("TEST question: ", question.toString())
-//        Log.d("TEST question: ", dataQuestion[questionNumber])
-
         binding.nextButton.setOnClickListener {
             timer.cancel()
-            if (checkChoice(userChoices, shuffledAnswers)) score++
-            Log.d("GAMEON: ", checkChoice(userChoices, shuffledAnswers).toString())
+            Log.d("OnClick: ", "User: $userChoicesInt, Data: $shuffledAnswers, ${compareAnswers()}")
+
+            if (compareAnswers()) score++
             if (question >= apiQuestionSize) setScore() else gameOn()
         }
     }

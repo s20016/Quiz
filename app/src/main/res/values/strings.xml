@@ -5,6 +5,12 @@
     <string name="start_btn">START</string>
     <string name="main_img">Main img</string>
 
+    <string-array name="itemCounts">
+        <item>10 Questions</item>
+        <item>20 Questions</item>
+        <item>30 Questions</item>
+    </string-array>
+
     <!-- activity_quiz -->
     <string name="quiz_question">A random question is generated here!</string>
     <string name="quiz_answer">Answers: 0</string>
@@ -15,6 +21,8 @@
     <string name="quiz_number">Q1</string>
     <string name="quiz_nextButton">Check!</string>
     <string name="quiz_img">Quiz img</string>
+    <string name="quiz_refresh">REFRESH</string>
+    <string name="quiz_verMsg">Swipe down to refresh!</string>
 
     <!-- activity_result -->
     <string name="result_message">Great Job!</string>

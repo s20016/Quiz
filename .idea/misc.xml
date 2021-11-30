@@ -13,6 +13,7 @@
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/quiz_question.xml" value="0.2755208333333333" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/quiz_questionbg.xml" value="0.2755208333333333" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/round_corner.xml" value="0.2755208333333333" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/spinner_item.xml" value="0.12916666666666668" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_quiz.xml" value="0.264" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_result.xml" value="0.259375" />
@@ -20,6 +21,8 @@
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/choice.xml" value="0.24375" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/list_choices.xml" value="0.24375" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/recycler_view_item.xml" value="0.24375" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/spinner_dropdown.xml" value="0.153125" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/spinner_item.xml" value="0.259375" />
         <entry key="..\:/Users/tinio/AndroidStudioProjects/Quiz/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2755208333333333" />
         <entry key="..\:/Users/tinio/AndroidStudioProjects/Quiz/app/src/main/res/drawable/ic_baseline_brightness_1_24.xml" value="0.2755208333333333" />
         <entry key="..\:/Users/tinio/AndroidStudioProjects/Quiz/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2755208333333333" />
