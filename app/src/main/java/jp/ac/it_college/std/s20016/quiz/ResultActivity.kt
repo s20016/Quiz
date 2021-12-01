@@ -18,6 +18,7 @@ class ResultActivity : AppCompatActivity() {
 
         val score = intent.getStringExtra("SCORE")
         val message = intent.getStringExtra("MESSAGE")
+        val itemCount = intent.getStringExtra("ITEM_COUNT")
 
         binding.resultMessage.text = message
         binding.resultScore.text = score
@@ -27,7 +28,10 @@ class ResultActivity : AppCompatActivity() {
         }
 
         binding.resultRestart.setOnClickListener {
-            Intent(this, QuizActivity::class.java).also { startActivity(it) }
+            Intent(this, QuizActivity::class.java).also {
+                it.putExtra("POSITION", itemCount.toString())
+                startActivity(it)
+            }
         }
     }
 }

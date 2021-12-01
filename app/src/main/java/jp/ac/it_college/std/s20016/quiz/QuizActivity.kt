@@ -27,6 +27,7 @@ class QuizActivity : AppCompatActivity() {
     private val dataId = mutableListOf<List<String>>()
     private val dataAnswers = mutableListOf<Int>()
     private val dataChoices = mutableListOf<List<String>>()
+    private var itemCount = ""
 
     private lateinit var binding: ActivityQuizBinding
     private var layoutManager: RecyclerView.LayoutManager? = null
@@ -38,6 +39,7 @@ class QuizActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
         val position = intent.getStringExtra("POSITION").toString()
+        itemCount = position
 
         runBlocking {
             val msg = "Randomizing Questions!"
@@ -99,6 +101,7 @@ class QuizActivity : AppCompatActivity() {
 
         intent.putExtra("SCORE", points)
         intent.putExtra("MESSAGE", message)
+        intent.putExtra("ITEM_COUNT", itemCount)
         startActivity(intent)
     }
 
@@ -149,7 +152,7 @@ class QuizActivity : AppCompatActivity() {
 
         // Compare userAnswer and dataAnswer
         fun compareAnswers(): Boolean {
-            return (userChoicesInt.containsAll(shuffledAnswers))
+            return userChoicesInt.containsAll(shuffledAnswers)
         }
 
         // Timer
