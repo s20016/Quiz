@@ -1,6 +1,6 @@
-## Android I
-> Android I 期末試験  
-> Midterm Exam: Create a Quiz Application
+## Android II
+> Android II 期末試験  
+> Finals Exam: Upgrade Quiz I Application
 
 Notes:
   - Images used in the application are from [unsplash.com](https://unsplash.com/) and [pexels.com](https://www.pexels.com/).
