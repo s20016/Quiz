@@ -1,6 +1,5 @@
 package jp.ac.it_college.std.s20016.quiz
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +22,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private val baseURL = "https://script.google.com/macros/s/AKfycbznWpk2m8q6lbLWSS6qaz3uS6j3L4zPwv7CqDEiC433YOgAdaFekGJmjoAO60quMg6l/"
     private var start = false
+    private var positionSpinner: Int = 0
 
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,13 +43,16 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
 
         binding.itemCountSpinner.onItemSelectedListener = this
-
         binding.startButton.isEnabled = true
         binding.startButton.setOnClickListener {
             if (start) {
                 Intent (this, QuizActivity::class.java).also {
+                    it.putExtra("POSITION", positionSpinner.toString())
                     startActivity(it)
                 }
+            } else {
+                val msg = "Swipe down to fetch data!"
+                Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -57,13 +60,11 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     // Spinner Interface
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        Log.d("TEST", "onItemSelected: $position ")
-        val intent = Intent(this, QuizActivity::class.java)
-        intent.putExtra("SPINNER_POSITION", position)
+        positionSpinner = position
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        Log.d("TEST", "onNothingSelected: None Selected")
+        positionSpinner = 0
     }
 
     // Swipe down to update data
@@ -115,7 +116,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         ret = dataQuestionSize > 0
         return ret
     }
-
 
     // Get API Latest Version
     private fun getApiVersion() {
