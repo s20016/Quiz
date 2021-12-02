@@ -1,6 +1,5 @@
 package jp.ac.it_college.std.s20016.quiz
 
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,32 +8,28 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import com.google.gson.Gson
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     private val baseURL = "https://script.google.com/macros/s/AKfycbznWpk2m8q6lbLWSS6qaz3uS6j3L4zPwv7CqDEiC433YOgAdaFekGJmjoAO60quMg6l/"
+    private val dbHelper = DBHandler(this)
     private var start = false
     private var positionSpinner: Int = 0
-
     private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         onRefresh()
-        getCurrentVersion()
-        start = checkQuestions()
+        start = checkDatabase()
 
-        // Spinner
+
         ArrayAdapter.createFromResource(
             this, R.array.itemCounts, R.layout.spinner_item
         ).also { adapter ->
@@ -55,7 +50,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                 Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     // Spinner Interface
@@ -80,9 +74,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         runBlocking {
             launch {
                 val msg = "API Updated!"
-                getApiVersion()
                 getApiData()
-                delay(2500L)
+                delay(3000L)
                 Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
                 start = true
             }
@@ -92,78 +85,42 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         return false
     }
 
-    // Get API Current Version
-    private fun getCurrentVersion() {
-        val verPref = getSharedPreferences("ApiVersionPref", Context.MODE_PRIVATE)
-        val hasVerPref = verPref.contains("ApiVersion")
-
-        if (hasVerPref) {
-            val currentVersion = verPref.getString("ApiVersion", "")
-            val initialVersion = "v.${currentVersion} \nSwipe down to refresh!"
-            binding.tvVersion.text = initialVersion
-        } else {
-            val initialVersion = "Swipe down to refresh!"
-            binding.tvVersion.text = initialVersion
-        }
+    private fun checkDatabase(): Boolean {
+        val data = dbHelper.readDataId()
+        return (data.size != 0)
     }
 
-    // Check if APIQuestion is available
-    private fun checkQuestions(): Boolean {
-        val ret: Boolean
-        val dataPref = getSharedPreferences("ApiDataPref", Context.MODE_PRIVATE)
-        val dataQuestionSize = dataPref.all.size
-
-        ret = dataQuestionSize > 0
-        return ret
+    // Database
+    private fun insertData(
+        id: Int,
+        question: String,
+        answer: Int,
+        choice0: String,
+        choice1: String,
+        choice2: String,
+        choice3: String,
+        choice4: String,
+        choice5: String,
+    ) {
+        val db = dbHelper.writableDatabase
+        val dataValue = """
+            INSERT INTO ApiData (Id, Question, Answer, Choice0, Choice1, Choice2, Choice3, Choice4, Choice5)
+            VALUES ($id, "$question", $answer, "$choice0", "$choice1", "$choice2", "$choice3", "$choice4", "$choice5")
+        """.trimIndent()
+        val insert = db.compileStatement(dataValue)
+        insert.executeInsert()
     }
 
-    // Get API Latest Version
-    private fun getApiVersion() {
-        val verPref = getSharedPreferences("ApiVersionPref", Context.MODE_PRIVATE)
-        val sharedEdit = verPref.edit()
-        val retBuilder = Retrofit.Builder()
-            .baseUrl(baseURL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(ApiInterface::class.java)
-        val retVersion = retBuilder.getVersion()
+    private fun deleteData() {
+        val db = dbHelper.writableDatabase
+        val dataValueDelete = "DELETE FROM ApiData"
+        val delete = db.compileStatement(dataValueDelete)
+        delete.executeInsert()
 
-        retVersion.enqueue(object : Callback<ApiVersionItem?> {
-            override fun onResponse(
-                call: Call<ApiVersionItem?>,
-                response: Response<ApiVersionItem?>
-            ) {
-                try {
-                    var newVer = ""
-
-                    runBlocking {
-                        val resBody = async { response.body()!!.version }
-                        newVer = resBody.await().toString()
-                    }
-
-                    val resultVer = "v.${newVer}"
-
-                    sharedEdit.putString("ApiVersion", newVer).apply()
-                    binding.tvVersion.text = resultVer
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Log.d("TEST", "Error")
-                } finally {
-                    response.errorBody()?.close()
-                }
-            }
-            override fun onFailure(call: Call<ApiVersionItem?>, t: Throwable) {
-                Log.d("TEST", "Error")
-            }
-        })
     }
 
-
-    // Get API Data
     private fun getApiData() {
-        val dataPref = getSharedPreferences("ApiDataPref", Context.MODE_PRIVATE)
-        val sharedEdit = dataPref.edit()
+        deleteData()
         val retBuilder = Retrofit.Builder()
             .baseUrl(baseURL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -171,38 +128,52 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             .create(ApiInterface::class.java)
 
         val retData = retBuilder.getData()
+        val updatedChoices = mutableListOf<String>()
 
-        retData.enqueue(object : Callback<List<ApiDataItem>?> {
+        retData.enqueue(object: Callback<List<ApiDataItem>> {
             override fun onResponse(
-                call: Call<List<ApiDataItem>?>,
-                response: Response<List<ApiDataItem>?>
+                call: Call<List<ApiDataItem>>,
+                response: Response<List<ApiDataItem>>
             ) {
-                try {
-                    var dataApiId: String
-                    val resBody = response.body()!!
-                    val gson = Gson()
-                    for (data in resBody) {
-                        dataApiId = data.id.toString()
-                        val dataObj = ApiDataItem(
-                            id = data.id,
-                            question = data.question,
-                            answers = data.answers,
-                            choices = data.choices
-                        )
-                        val jsonData = gson.toJson(dataObj)
-                        sharedEdit.putString(dataApiId, jsonData).apply()
+                val resBody = response.body()!!
+                for (data in resBody) {
+                    val dataObj = ApiDataItem(
+                        id = data.id,
+                        question = data.question,
+                        answers = data.answers,
+                        choices = data.choices
+                    )
+
+                    Log.d("TEST", data.id.toString())
+
+                    for (i in dataObj.choices) {
+                        if (i != "") {
+                            updatedChoices.add(i)
+                        } else {
+                            updatedChoices.add("NULL")
+                        }
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Log.d("TEST", "Error")
-                } finally {
-                    response.errorBody()?.close()
+
+                    insertData(
+                        dataObj.id,
+                        dataObj.question,
+                        dataObj.answers,
+                        updatedChoices[0],
+                        updatedChoices[1],
+                        updatedChoices[2],
+                        updatedChoices[3],
+                        updatedChoices[4],
+                        updatedChoices[5]
+                    )
+
+                   updatedChoices.clear()
                 }
             }
 
-            override fun onFailure(call: Call<List<ApiDataItem>?>, t: Throwable) {
-                Log.d("TEST", "Error Loading")
+            override fun onFailure(call: Call<List<ApiDataItem>>, t: Throwable) {
+                TODO("Not yet implemented")
             }
+
         })
     }
 }

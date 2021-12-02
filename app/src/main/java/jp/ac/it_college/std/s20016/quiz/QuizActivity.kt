@@ -1,21 +1,21 @@
 package jp.ac.it_college.std.s20016.quiz
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityQuizBinding
-import kotlinx.coroutines.*
 import kotlin.math.ceil
 
 class QuizActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityQuizBinding
+    private var layoutManager: RecyclerView.LayoutManager? = null
+    private val dbHelper = DBHandler(this)
 
     // Game variables
     private var apiQuestionSize = 0
@@ -24,13 +24,9 @@ class QuizActivity : AppCompatActivity() {
 
     // Data API variables
     private val dataQuestion = mutableListOf<String>()
-    private val dataId = mutableListOf<List<String>>()
-    private val dataAnswers = mutableListOf<Int>()
+    private val dataAnswers = mutableListOf<String>()
     private val dataChoices = mutableListOf<List<String>>()
     private var itemCount = ""
-
-    private lateinit var binding: ActivityQuizBinding
-    private var layoutManager: RecyclerView.LayoutManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,46 +34,41 @@ class QuizActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportActionBar?.hide()
+
         val position = intent.getStringExtra("POSITION").toString()
         itemCount = position
 
-        runBlocking {
-            val msg = "Randomizing Questions!"
-            Toast.makeText(applicationContext, msg, Toast.LENGTH_LONG).show()
-            delay(3500L)
-            generateQuizSet(position)
-        }
-
+        generateQuizSet(position)
         gameOn()
     }
 
-    // Retrieve saved data and randomize
     private fun generateQuizSet(position: String) {
-        val dataSharedPref = getSharedPreferences("ApiDataPref", Context.MODE_PRIVATE)
-        val apiID = dataSharedPref.all.map { it.key }
-
-        dataId.add(apiID.toList())
-        dataId[0].shuffled()
+        val id = dbHelper.readDataId()
 
         val pos = when(position) {
             "0" -> 10
             "1" -> 20
             "2" -> 30
             else -> 50
-        }
+        }; apiQuestionSize = pos
 
-        apiQuestionSize = pos
-        val selectedQuestions = dataId[0].asSequence().shuffled().take(apiQuestionSize).toList()
+        val selectedQuestions = id.shuffled().take(apiQuestionSize).toList()
+        Log.d("TEST SelectedQuestions: ", selectedQuestions.toString())
 
-        for (item in selectedQuestions) {
-            val rawData = dataSharedPref.getString(item, "")
-            val data = Gson().fromJson(rawData, ApiDataItem::class.java)
-            dataAnswers.add(data.answers)
-            dataQuestion.add(data.question)
-            dataChoices.add(data.choices)
+        selectedQuestions.forEach {
+            val data = dbHelper.readValues(it)
+            val rows = data[0]
+                .replace("[", "")
+                .replace("]", "")
+                .split(", ")
+
+            dataQuestion.add(rows[1])
+            dataAnswers.add(rows[2])
+            dataChoices.add(
+                listOf(rows[3], rows[4], rows[5], rows[6], rows[7], rows[8])
+            )
         }
     }
-
 
     // Message and score(points)
     private fun getResult(score: Int): Pair<String, String> {
@@ -93,7 +84,6 @@ class QuizActivity : AppCompatActivity() {
         }; return Pair(points, message)
     }
 
-
     // Passing data (msg, pts) to ResultActivity
     private fun setScore() {
         val (points, message) = getResult(score)
@@ -105,7 +95,6 @@ class QuizActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-
     // Main Game
     private fun gameOn() {
 
@@ -114,10 +103,10 @@ class QuizActivity : AppCompatActivity() {
         // Question and Choices Variables
         val questionNumber = question - 1
         val questionQuestion = dataQuestion[questionNumber]
-        val questionChoices = dataChoices[questionNumber].filter { x: String? -> x != "" }
+        val questionChoices = dataChoices[questionNumber].filter { x: String? -> x != "NULL" }
         val questionAnswers = dataAnswers[questionNumber]
 
-        val realAnswers = questionChoices.take(questionAnswers)
+        val realAnswers = questionChoices.take(questionAnswers.toInt())
         val shuffledChoices = questionChoices.shuffled()
         val shuffledAnswers = mutableListOf<Int>()
 
@@ -135,7 +124,7 @@ class QuizActivity : AppCompatActivity() {
         layoutManager = LinearLayoutManager(this)
         binding.rvChoiceItems.layoutManager = layoutManager
 
-        val adapter = RecyclerAdapter(shuffledChoices, questionAnswers)
+        val adapter = RecyclerAdapter(shuffledChoices, questionAnswers.toInt())
         binding.rvChoiceItems.adapter = adapter
 
         var userChoicesInt = mutableListOf<Int>()
