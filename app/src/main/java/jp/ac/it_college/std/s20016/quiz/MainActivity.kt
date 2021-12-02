@@ -1,7 +1,5 @@
 package jp.ac.it_college.std.s20016.quiz
 
-import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,7 +8,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import com.google.gson.Gson
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
 import retrofit2.*
@@ -78,7 +75,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             launch {
                 val msg = "API Updated!"
                 getApiData()
-                delay(2500L)
+                delay(3000L)
                 Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
                 start = true
             }
@@ -89,7 +86,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun checkDatabase(): Boolean {
-        val data = dbHelper.readData()
+        val data = dbHelper.readDataId()
         return (data.size != 0)
     }
 

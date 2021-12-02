@@ -1,21 +1,14 @@
 package jp.ac.it_college.std.s20016.quiz
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityQuizBinding
-import kotlinx.coroutines.*
-import java.io.BufferedReader
-import java.io.InputStream
 import kotlin.math.ceil
 
 class QuizActivity : AppCompatActivity() {
@@ -25,13 +18,11 @@ class QuizActivity : AppCompatActivity() {
     private val dbHelper = DBHandler(this)
 
     // Game variables
-    private var apiData = mutableListOf<String>()
     private var apiQuestionSize = 0
     private var question = 0
     private var score = 0
 
     // Data API variables
-    private val dataId = mutableListOf<List<String>>()
     private val dataQuestion = mutableListOf<String>()
     private val dataAnswers = mutableListOf<String>()
     private val dataChoices = mutableListOf<List<String>>()
@@ -48,17 +39,10 @@ class QuizActivity : AppCompatActivity() {
         itemCount = position
 
         generateQuizSet(position)
-        runBlocking {
-            val msg = "Randomizing Questions!"
-            Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
-            delay(2000)
-        }
-
         gameOn()
     }
 
     private fun generateQuizSet(position: String) {
-        val data = dbHelper.readData()
         val id = dbHelper.readDataId()
 
         val pos = when(position) {
@@ -69,25 +53,21 @@ class QuizActivity : AppCompatActivity() {
         }; apiQuestionSize = pos
 
         val selectedQuestions = id.shuffled().take(apiQuestionSize).toList()
-
         Log.d("TEST SelectedQuestions: ", selectedQuestions.toString())
 
-        for (index in 0 until data.size) {
-            val row = data[index]
+        selectedQuestions.forEach {
+            val data = dbHelper.readValues(it)
+            val rows = data[0]
                 .replace("[", "")
                 .replace("]", "")
                 .split(", ")
 
-            dataQuestion.add(row[1])
-            dataAnswers.add(row[2])
+            dataQuestion.add(rows[1])
+            dataAnswers.add(rows[2])
             dataChoices.add(
-                listOf(row[3], row[4], row[5], row[6], row[7], row[8])
+                listOf(rows[3], rows[4], rows[5], rows[6], rows[7], rows[8])
             )
         }
-
-        Log.d("TEST", dataQuestion.toString())
-        Log.d("TEST", dataAnswers.toString())
-        Log.d("TEST", dataChoices.toString())
     }
 
     // Message and score(points)

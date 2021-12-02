@@ -32,6 +32,7 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
     }
 
 
+    @SuppressLint("Range")
     fun readDataId(): MutableList<String> {
         val idList: MutableList<String> = ArrayList()
         val db = this.readableDatabase
@@ -39,7 +40,7 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         val result = db.rawQuery(dataIdRead, null)
         if (result.moveToNext()) {
             do {
-                val id = result.getString(result.getColumnIndex("Id").toInt())
+                val id = result.getString(result.getColumnIndex("Id"))
                 idList.add(id)
             } while (result.moveToNext())
             result.close()
@@ -47,30 +48,29 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         return idList
     }
 
-    @SuppressLint("Recycle")
-    fun readData(): MutableList<String> {
-        val apiList: MutableList<String> = ArrayList()
+    @SuppressLint("Range")
+    fun readValues(id: String): MutableList<String> {
+        val idValues = mutableListOf<String>()
         val db = this.readableDatabase
-        val dataValueRead = "SELECT * FROM ApiData"
+        val dataValueRead = "SELECT * FROM ApiData WHERE Id=$id"
         val result = db.rawQuery(dataValueRead, null)
         if (result.moveToFirst()) {
             do {
-                val id = result.getString(result.getColumnIndex("Id").toInt())
-                val question = result.getString(result.getColumnIndex("Question").toInt())
-                val answer = result.getString(result.getColumnIndex("Answer").toInt())
-                val choice0 = result.getString(result.getColumnIndex("Choice0").toInt())
-                val choice1 = result.getString(result.getColumnIndex("Choice1").toInt())
-                val choice2 = result.getString(result.getColumnIndex("Choice2").toInt())
-                val choice3 = result.getString(result.getColumnIndex("Choice3").toInt())
-                val choice4 = result.getString(result.getColumnIndex("Choice4").toInt())
-                val choice5 = result.getString(result.getColumnIndex("Choice5").toInt())
+                val question = result.getString(result.getColumnIndex("Question"))
+                val answer = result.getString(result.getColumnIndex("Answer"))
+                val choice0 = result.getString(result.getColumnIndex("Choice0"))
+                val choice1 = result.getString(result.getColumnIndex("Choice1"))
+                val choice2 = result.getString(result.getColumnIndex("Choice2"))
+                val choice3 = result.getString(result.getColumnIndex("Choice3"))
+                val choice4 = result.getString(result.getColumnIndex("Choice4"))
+                val choice5 = result.getString(result.getColumnIndex("Choice5"))
                 val data = listOf<String>(
                     id, question, answer, choice0, choice1, choice2, choice3, choice4, choice5
                 )
-                apiList.add(data.toString())
+                idValues.add(data.toString())
             } while (result.moveToNext())
             result.close()
         }
-        return apiList
+        return idValues
     }
 }
