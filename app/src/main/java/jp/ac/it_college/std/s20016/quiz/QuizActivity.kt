@@ -26,7 +26,7 @@ class QuizActivity : AppCompatActivity() {
     private val dataQuestion = mutableListOf<String>()
     private val dataAnswers = mutableListOf<String>()
     private val dataChoices = mutableListOf<List<String>>()
-    private var itemCount = ""
+    private var itemCount = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +45,7 @@ class QuizActivity : AppCompatActivity() {
     private fun generateQuizSet(position: String) {
         val id = dbHelper.readDataId()
 
-        val pos = when(position) {
-            "0" -> 10
-            "1" -> 20
-            "2" -> 30
-            else -> 50
-        }; apiQuestionSize = pos
+        apiQuestionSize = position.toInt()
 
         val selectedQuestions = id.shuffled().take(apiQuestionSize).toList()
         Log.d("TEST SelectedQuestions: ", selectedQuestions.toString())

@@ -13,9 +13,10 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = """
             CREATE TABLE ApiData(
-              Id INTEGER PRIMARY KEY NOT NULL,
-              Question TEXT NOT NULL,
-              Answer INTEGER NOT NULL,
+              Version TEXT,
+              Id INTEGER PRIMARY KEY,
+              Question TEXT,
+              Answer INTEGER,
               Choice0 BLOB,
               Choice1 BLOB,
               Choice2 BLOB,
@@ -31,6 +32,17 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         TODO("Not yet implemented")
     }
 
+    @SuppressLint("Recycle", "Range")
+    fun readVersion(): String {
+        var dataVersion = String()
+        val db = this.readableDatabase
+        val dataVerRead = "SELECT Version FROM ApiData"
+        val result = db.rawQuery(dataVerRead, null)
+        val ver = result.getString(result.getColumnIndex("Version"))
+        dataVersion = ver.toString()
+        result.close()
+        return dataVersion
+    }
 
     @SuppressLint("Range")
     fun readDataId(): MutableList<String> {
@@ -44,8 +56,7 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
                 idList.add(id)
             } while (result.moveToNext())
             result.close()
-        }
-        return idList
+        }; return idList
     }
 
     @SuppressLint("Range")
@@ -70,7 +81,6 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
                 idValues.add(data.toString())
             } while (result.moveToNext())
             result.close()
-        }
-        return idValues
+        }; return idValues
     }
 }

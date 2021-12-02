@@ -13,17 +13,30 @@
         android:layout_height="match_parent"
         android:background="@color/background">
 
-        <Spinner
-            android:id="@+id/itemCountSpinner"
-            android:layout_width="160dp"
-            android:layout_height="40dp"
-            android:backgroundTint="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/startButton"
+        <!--        <Spinner-->
+<!--            android:id="@+id/itemCountSpinner"-->
+<!--            android:layout_width="160dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:backgroundTint="@color/white"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/startButton"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.498"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/startText01"-->
+<!--            app:layout_constraintVertical_bias="0.0" />-->
+
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="145dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="28dp"
+            android:background="@color/background"
+            android:padding="10dp"
+            android:theme="@style/AppTheme.Picker"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startText01"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/startText01" />
 
         <ImageView
             android:id="@+id/startImage"
@@ -35,7 +48,7 @@
             app:layout_constraintHorizontal_bias="0.491"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.042"
+            app:layout_constraintVertical_bias="0.007"
             app:srcCompat="@drawable/main_image" />
 
         <TextView
@@ -52,13 +65,13 @@
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/startImage"
-            app:layout_constraintVertical_bias="0.056" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <Button
             android:id="@+id/startButton"
             android:layout_width="196dp"
             android:layout_height="69dp"
-            android:layout_marginTop="44dp"
+            android:layout_marginTop="8dp"
             android:backgroundTint="@color/secondary"
             android:text="@string/start_btn"
             android:textColor="@color/white"
@@ -67,23 +80,36 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/startText01" />
+            app:layout_constraintTop_toBottomOf="@+id/numberPicker" />
 
         <TextView
-            android:id="@+id/tvVersion"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="10dp"
-            android:text="@string/quiz_verMsg"
-            android:textAlignment="center"
-            android:textColor="@color/secondary"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="5dp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:text="@string/main_picker"
+            app:layout_constraintBottom_toTopOf="@+id/numberPicker"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.942" />
+            app:layout_constraintTop_toBottomOf="@+id/startText01" />
+
+        <!--        <TextView-->
+<!--            android:id="@+id/tvVersion"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="16dp"-->
+<!--            android:elevation="10dp"-->
+<!--            android:text="@string/quiz_verMsg"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="17sp"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.497"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

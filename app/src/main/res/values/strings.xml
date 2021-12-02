@@ -31,4 +31,5 @@
     <string name="result_home">Main Menu</string>
     <string name="result_restart">Play Again!</string>
     <string name="result_img">Result img</string>
+    <string name="main_picker">Questions</string>
 </resources>

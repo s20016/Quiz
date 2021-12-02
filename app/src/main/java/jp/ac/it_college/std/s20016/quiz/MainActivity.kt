@@ -4,21 +4,20 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
+import kotlinx.serialization.json.buildJsonObject
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
     private val baseURL = "https://script.google.com/macros/s/AKfycbznWpk2m8q6lbLWSS6qaz3uS6j3L4zPwv7CqDEiC433YOgAdaFekGJmjoAO60quMg6l/"
     private val dbHelper = DBHandler(this)
     private var start = false
-    private var positionSpinner: Int = 0
+    private var positionValue: Int = 10
+    var latestVersion = ""
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,23 +25,17 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        onRefresh()
         start = checkDatabase()
+        getApiVersion()
 
+        onRefresh()
+        numberPicker()
 
-        ArrayAdapter.createFromResource(
-            this, R.array.itemCounts, R.layout.spinner_item
-        ).also { adapter ->
-            adapter.setDropDownViewResource(R.layout.spinner_dropdown)
-            binding.itemCountSpinner.adapter = adapter
-        }
-
-        binding.itemCountSpinner.onItemSelectedListener = this
         binding.startButton.isEnabled = true
         binding.startButton.setOnClickListener {
             if (start) {
                 Intent (this, QuizActivity::class.java).also {
-                    it.putExtra("POSITION", positionSpinner.toString())
+                    it.putExtra("POSITION", positionValue.toString())
                     startActivity(it)
                 }
             } else {
@@ -52,37 +45,40 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    // Spinner Interface
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        positionSpinner = position
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        positionSpinner = 0
+    private fun numberPicker() {
+        val numberPicker = binding.numberPicker
+        numberPicker.minValue = 10
+        numberPicker.maxValue = 20
+        numberPicker.wrapSelectorWheel = true
+        numberPicker.setOnValueChangedListener { picker, oldVal, newVal ->
+            positionValue = newVal
+//            val intent = Intent(this, QuizActivity::class.java)
+//            intent.putExtra("POSITION", positionValue.toString())
+//            startActivity(intent)
+        }
     }
 
     // Swipe down to update data
     private fun onRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
-            binding.swipeRefresh.isRefreshing = updateAPI()
+            binding.swipeRefresh.isRefreshing = checkVersion()
         }
     }
 
     // Update API (Version and Questions)
-    private fun updateAPI(): Boolean  {
-        binding.startButton.isEnabled = false
+    private fun updateAPI() {
         runBlocking {
             launch {
                 val msg = "API Updated!"
+                deleteData()
+                insertVersion(latestVersion)
                 getApiData()
                 delay(3000L)
-                Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, msg, Toast.LENGTH_LONG).show()
                 start = true
             }
         }
-        binding.startButton.isEnabled = true
-        start = true
-        return false
+
     }
 
     private fun checkDatabase(): Boolean {
@@ -90,17 +86,26 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         return (data.size != 0)
     }
 
+
+    private fun checkVersion(): Boolean {
+        binding.startButton.isEnabled = false
+        if (checkDatabase()) {
+            val curVersion = dbHelper.readVersion()
+            val newVersion = latestVersion
+            if (curVersion != newVersion) updateAPI()
+            Log.d("CheckVersion: ", "Cur: $curVersion, New: $newVersion")
+        } else updateAPI()
+        binding.startButton.isEnabled = true
+        start = true
+        return false
+    }
+
+
     // Database
     private fun insertData(
-        id: Int,
-        question: String,
-        answer: Int,
-        choice0: String,
-        choice1: String,
-        choice2: String,
-        choice3: String,
-        choice4: String,
-        choice5: String,
+        id: Int, question: String, answer: Int,
+        choice0: String, choice1: String, choice2: String,
+        choice3: String, choice4: String, choice5: String,
     ) {
         val db = dbHelper.writableDatabase
         val dataValue = """
@@ -111,13 +116,53 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         insert.executeInsert()
     }
 
+
+    private fun insertVersion(version: String) {
+        val db = dbHelper.writableDatabase
+        val dataVersion = """
+            INSERT INTO ApiData (Version) VALUES ("$version")
+        """.trimIndent()
+        val insert = db.compileStatement(dataVersion)
+        insert.executeInsert()
+    }
+
+
     private fun deleteData() {
         val db = dbHelper.writableDatabase
         val dataValueDelete = "DELETE FROM ApiData"
         val delete = db.compileStatement(dataValueDelete)
         delete.executeInsert()
-
     }
+
+
+    private fun getApiVersion() {
+        val retBuilder = Retrofit.Builder()
+            .baseUrl(baseURL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiInterface::class.java)
+
+        val retData = retBuilder.getVersion()
+        var version = String()
+
+        retData.enqueue(object: Callback<ApiVersionItem?> {
+            override fun onResponse(
+                call: Call<ApiVersionItem?>,
+                response: Response<ApiVersionItem?>
+            ) {
+                val resBody = response.body()!!
+                val dataObj = resBody.version.toString()
+
+                latestVersion = dataObj
+                Log.d("GetApiVersion: ", latestVersion)
+            }
+
+            override fun onFailure(call: Call<ApiVersionItem?>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
 
     private fun getApiData() {
         deleteData()
@@ -155,15 +200,9 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
                     }
 
                     insertData(
-                        dataObj.id,
-                        dataObj.question,
-                        dataObj.answers,
-                        updatedChoices[0],
-                        updatedChoices[1],
-                        updatedChoices[2],
-                        updatedChoices[3],
-                        updatedChoices[4],
-                        updatedChoices[5]
+                        dataObj.id, dataObj.question, dataObj.answers,
+                        updatedChoices[0], updatedChoices[1], updatedChoices[2],
+                        updatedChoices[3], updatedChoices[4], updatedChoices[5]
                     )
 
                    updatedChoices.clear()
