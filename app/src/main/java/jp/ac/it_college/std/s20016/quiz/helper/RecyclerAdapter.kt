@@ -1,10 +1,12 @@
-package jp.ac.it_college.std.s20016.quiz
+package jp.ac.it_college.std.s20016.quiz.helper
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.recyclerview.widget.RecyclerView
+import jp.ac.it_college.std.s20016.quiz.R
 
 class RecyclerAdapter(private val questionChoices: List<String>, private val questionAnswer: Int)
     : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
@@ -47,10 +49,13 @@ class RecyclerAdapter(private val questionChoices: List<String>, private val que
                 } else {
                     if (isChecked) {
                         checkedLimit++
+                        itemView.setBackgroundColor(Color.parseColor("#0E3858"))
                         if (itemSelected !in userChoice) userChoice.add(itemSelected)
                         listener.onItemClick(userChoice)
+
                     } else {
                         checkedLimit--
+                        itemView.setBackgroundColor(Color.parseColor("#2C394B"))
                         if (itemSelected in userChoice) userChoice.remove(itemSelected)
                         listener.onItemClick(userChoice)
                     }

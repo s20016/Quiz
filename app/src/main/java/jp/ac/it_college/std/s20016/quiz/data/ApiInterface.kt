@@ -1,4 +1,4 @@
-package jp.ac.it_college.std.s20016.quiz
+package jp.ac.it_college.std.s20016.quiz.data
 
 import retrofit2.Call
 import retrofit2.http.GET

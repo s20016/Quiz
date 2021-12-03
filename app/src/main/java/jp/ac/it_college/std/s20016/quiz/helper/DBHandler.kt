@@ -1,4 +1,4 @@
-package jp.ac.it_college.std.s20016.quiz
+package jp.ac.it_college.std.s20016.quiz.helper
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -13,9 +13,10 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = """
             CREATE TABLE ApiData(
-              Id INTEGER PRIMARY KEY NOT NULL,
-              Question TEXT NOT NULL,
-              Answer INTEGER NOT NULL,
+              Version TEXT,
+              Id INTEGER PRIMARY KEY,
+              Question TEXT,
+              Answer INTEGER,
               Choice0 BLOB,
               Choice1 BLOB,
               Choice2 BLOB,
@@ -31,6 +32,20 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         TODO("Not yet implemented")
     }
 
+    @SuppressLint("Recycle", "Range")
+    fun readVersion(): String {
+        var dataVersion = String()
+        val db = this.readableDatabase
+        val dataVerRead = "SELECT Version FROM ApiData"
+        val result = db.rawQuery(dataVerRead, null)
+        if (result != null && result.moveToFirst()) {
+            do {
+                val ver = result.getString(result.getColumnIndex("Version"))
+                dataVersion = ver.toString()
+            } while (result.moveToNext())
+            result.close()
+        }; return dataVersion
+    }
 
     @SuppressLint("Range")
     fun readDataId(): MutableList<String> {
@@ -38,14 +53,13 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         val db = this.readableDatabase
         val dataIdRead = "SELECT Id FROM ApiData"
         val result = db.rawQuery(dataIdRead, null)
-        if (result.moveToNext()) {
+        if (result != null && result.moveToFirst()) {
             do {
                 val id = result.getString(result.getColumnIndex("Id"))
                 idList.add(id)
             } while (result.moveToNext())
             result.close()
-        }
-        return idList
+        }; return idList
     }
 
     @SuppressLint("Range")
@@ -54,7 +68,7 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         val db = this.readableDatabase
         val dataValueRead = "SELECT * FROM ApiData WHERE Id=$id"
         val result = db.rawQuery(dataValueRead, null)
-        if (result.moveToFirst()) {
+        if (result != null && result.moveToFirst()) {
             do {
                 val question = result.getString(result.getColumnIndex("Question"))
                 val answer = result.getString(result.getColumnIndex("Answer"))
@@ -70,7 +84,6 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
                 idValues.add(data.toString())
             } while (result.moveToNext())
             result.close()
-        }
-        return idValues
+        }; return idValues
     }
 }

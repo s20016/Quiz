@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable-anydpi/ic_stat_name.xml" value="0.2382882882882883" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2755208333333333" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/cb_show_hide_selector.xml" value="0.24479166666666666" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/checkbox_color.xml" value="0.18468468468468469" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/checkbox_selector.xml" value="0.17239583333333333" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2755208333333333" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/main_startbg.xml" value="0.2755208333333333" />
@@ -14,8 +17,9 @@
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/quiz_questionbg.xml" value="0.2755208333333333" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/round_corner.xml" value="0.2755208333333333" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/drawable/spinner_item.xml" value="0.12916666666666668" />
-        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_main.xml" value="0.264" />
-        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_quiz.xml" value="0.264" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout-v26/activity_quiz.xml" value="0.15729166666666666" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_main.xml" value="0.4" />
+        <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_quiz.xml" value="0.4" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/activity_result.xml" value="0.259375" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/blink.xml" value="0.21458333333333332" />
         <entry key="..\:/Documents/Clone/Quiz/app/src/main/res/layout/card_layout.xml" value="0.4" />
