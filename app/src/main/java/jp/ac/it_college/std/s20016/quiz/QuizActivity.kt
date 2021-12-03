@@ -11,6 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityQuizBinding
+import jp.ac.it_college.std.s20016.quiz.helper.DBHandler
+import jp.ac.it_college.std.s20016.quiz.helper.RecyclerAdapter
 import kotlin.math.ceil
 
 class QuizActivity : AppCompatActivity() {
@@ -18,7 +20,7 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuizBinding
     private var layoutManager: RecyclerView.LayoutManager? = null
     private val dbHelper = DBHandler(this)
-    var alertDialog: AlertDialog? = null
+    private var alertDialog: AlertDialog? = null
     private var quitQuiz = false
 
     // Game variables
@@ -39,7 +41,6 @@ class QuizActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportActionBar?.hide()
-        backHomeDialog()
 
         position = intent.getStringExtra("POSITION").toString()
         binding.btnHome.setOnClickListener { alertDialog?.show() }
@@ -66,7 +67,7 @@ class QuizActivity : AppCompatActivity() {
                 finish()
             }
         }
-        dialogBuilder.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->}
+        dialogBuilder.setNegativeButton("Cancel") { _: DialogInterface, _: Int -> }
         alertDialog = dialogBuilder.create()
     }
 
@@ -123,14 +124,25 @@ class QuizActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun compareAnswer(
+        userAns: MutableList<Int>,
+        dataAns: MutableList<Int>): Boolean {
+        val ret = userAns.containsAll(dataAns)
+
+        if (ret) binding.quizScore.setTextColor(Color.parseColor("#99ff80"))
+        if (!ret) binding.quizScore.setTextColor(Color.parseColor("#ff7373"))
+        return ret
+    }
+
     // Main Game
     private fun gameOn() {
 
+        backHomeDialog()
         if (quitQuiz) finish()
 
+        // Question and Choices Variables
         question++
 
-        // Question and Choices Variables
         val questionNumber = question - 1
         val questionQuestion = dataQuestion[questionNumber]
         val questionChoices = dataChoices[questionNumber].filter { x: String? -> x != "NULL" }
@@ -169,19 +181,16 @@ class QuizActivity : AppCompatActivity() {
             "SCORE: $score  |  Answer(s): $questionAnswers  |  Q: $question/$apiQuestionSize"
         binding.quizScore.text = scoreDisplay
 
-        // Compare userAnswer and dataAnswer
-        fun compareAnswers(): Boolean {
-            return userChoicesInt.containsAll(shuffledAnswers)
-        }
 
         // Timer
-        var timeLimit = 15000
+        var timeLimit = 16000
         if (question <= 1) timeLimit = 16000
 
         val timer = object : CountDownTimer(timeLimit.toLong(), 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val time = (millisUntilFinished / 1000).toInt()
                 val timeText = String.format("00:%02d", time)
+                if (time <= 14) binding.quizScore.setTextColor(Color.parseColor("#FFFFFF"))
                 if (time <= 3) binding.quizTimer.setTextColor(Color.parseColor("#FF4C29"))
                 if (time >= 4) binding.quizTimer.setTextColor(Color.parseColor("#FFFFFF"))
                 binding.quizTimer.text = timeText
@@ -189,20 +198,22 @@ class QuizActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 if (!quitQuiz) {
+                    val userIsCorrect = compareAnswer(userChoicesInt, shuffledAnswers)
                     Log.d("onFinish", "User: $userChoicesInt, Data: " +
-                            "$shuffledAnswers, ${compareAnswers()}")
-                    if (compareAnswers()) score++
+                            "$shuffledAnswers, $userIsCorrect")
+                    if (userIsCorrect) score++
                     if (question >= apiQuestionSize) setScore() else gameOn()
                 }
             }
-        }; timer.start()
+        }.start()
 
         binding.nextButton.setOnClickListener {
+            val userIsCorrect = compareAnswer(userChoicesInt, shuffledAnswers)
             timer.cancel()
-            Log.d("onClick", "User: $userChoicesInt, Data: $shuffledAnswers, ${compareAnswers()}")
+            Log.d("onClick", "User: $userChoicesInt, Data: $shuffledAnswers, $userIsCorrect")
 
             if (!quitQuiz) {
-                if (compareAnswers()) score++
+                if (userIsCorrect) score++
                 if (question >= apiQuestionSize) setScore() else gameOn()
             }
         }

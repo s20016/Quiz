@@ -33,4 +33,5 @@
     <string name="result_img">Result img</string>
     <string name="main_picker">Questions</string>
     <string name="quiz_home">HOME</string>
+    <string name="main_info">App info</string>
 </resources>

@@ -1,24 +1,31 @@
 package jp.ac.it_college.std.s20016.quiz
 
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import jp.ac.it_college.std.s20016.quiz.data.ApiDataItem
+import jp.ac.it_college.std.s20016.quiz.data.ApiInterface
+import jp.ac.it_college.std.s20016.quiz.data.ApiVersionItem
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityMainBinding
+import jp.ac.it_college.std.s20016.quiz.helper.DBHandler
 import kotlinx.coroutines.*
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityMainBinding
     private val baseURL = "https://script.google.com/macros/s/AKfycbznWpk2m8q6lbLWSS6qaz3uS6j3L4zPwv7CqDEiC433YOgAdaFekGJmjoAO60quMg6l/"
     private val dbHelper = DBHandler(this)
+    private var infoDialog: AlertDialog? = null
     private var start = false
     private var positionValue: Int = 10
+    private val appVersion = BuildConfig.VERSION_NAME
     var latestVersion = ""
-    var dvCount: Int = 0
-    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,11 +33,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         start = checkDatabase()
-        dvCount = getDataValueCount()
+        showAppInfoDialog(latestVersion)
 
         getApiVersion()
         onRefresh()
-        numberPicker(dvCount)
+        numberPicker()
+
+        binding.btnInfo.setOnClickListener {
+            infoDialog?.show()
+        }
 
         binding.startButton.isEnabled = true
         binding.startButton.setOnClickListener {
@@ -47,19 +58,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     // NumberPicker Settings
-    private fun numberPicker(count: Int) {
+    private fun numberPicker() {
         val numberPicker = binding.numberPicker
         numberPicker.minValue = 10
-        numberPicker.maxValue = count
+        numberPicker.maxValue = 30
         numberPicker.wrapSelectorWheel = true
         numberPicker.setOnValueChangedListener { _, _, newVal ->
             positionValue = newVal
         }
-    }
-
-    private fun getDataValueCount(): Int {
-        val dvCount = dbHelper.readDataId()
-        return dvCount.size
     }
 
     // Swipe down to update data
@@ -67,6 +73,21 @@ class MainActivity : AppCompatActivity() {
         binding.swipeRefresh.setOnRefreshListener {
             binding.swipeRefresh.isRefreshing = checkVersion()
         }
+    }
+
+    private fun showAppInfoDialog(version: String) {
+        val dialogBuilder = AlertDialog.Builder(this)
+        val apiVersion: String = if (version == "") "Need Reload" else "v$version"
+        dialogBuilder.setTitle("Welcome to Quiz II")
+        dialogBuilder.setMessage("""
+            Quiz II v$appVersion
+            API $apiVersion
+            
+            Author: JC Tinio (s20016)
+        """.trimIndent())
+        dialogBuilder.setPositiveButton(null) { _: DialogInterface, _: Int -> }
+        dialogBuilder.setNegativeButton("OK") { _: DialogInterface, _: Int -> }
+        infoDialog = dialogBuilder.create()
     }
 
     // Checks if DB table != empty
@@ -93,6 +114,8 @@ class MainActivity : AppCompatActivity() {
     // Checks if a new update is available
     private fun checkVersion(): Boolean {
         binding.startButton.isEnabled = false
+        binding.btnInfo.isEnabled = false
+
         if (checkDatabase()) {
             val curVersion = dbHelper.readVersion()
             val newVersion = latestVersion
@@ -106,6 +129,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, msg, Toast.LENGTH_SHORT).show()
             }
         } else updateAPI()
+
         binding.startButton.isEnabled = true
         start = true
         return false

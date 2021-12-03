@@ -15,7 +15,7 @@
         android:background="@drawable/quiz_question"
         android:elevation="1dp"
         android:gravity="center"
-        android:padding="20dp"
+        android:padding="18dp"
         android:text="@string/quiz_question"
         android:textAlignment="center"
         android:textColor="@color/white"

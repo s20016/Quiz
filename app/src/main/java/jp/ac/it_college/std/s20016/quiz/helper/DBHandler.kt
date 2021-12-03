@@ -1,4 +1,4 @@
-package jp.ac.it_college.std.s20016.quiz
+package jp.ac.it_college.std.s20016.quiz.helper
 
 import android.annotation.SuppressLint
 import android.content.Context
