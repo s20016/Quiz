@@ -38,10 +38,13 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         val db = this.readableDatabase
         val dataVerRead = "SELECT Version FROM ApiData"
         val result = db.rawQuery(dataVerRead, null)
-        val ver = result.getString(result.getColumnIndex("Version"))
-        dataVersion = ver.toString()
-        result.close()
-        return dataVersion
+        if (result != null && result.moveToFirst()) {
+            do {
+                val ver = result.getString(result.getColumnIndex("Version"))
+                dataVersion = ver.toString()
+            } while (result.moveToNext())
+            result.close()
+        }; return dataVersion
     }
 
     @SuppressLint("Range")
@@ -50,7 +53,7 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         val db = this.readableDatabase
         val dataIdRead = "SELECT Id FROM ApiData"
         val result = db.rawQuery(dataIdRead, null)
-        if (result.moveToNext()) {
+        if (result != null && result.moveToFirst()) {
             do {
                 val id = result.getString(result.getColumnIndex("Id"))
                 idList.add(id)
@@ -65,7 +68,7 @@ class DBHandler(context: Context): SQLiteOpenHelper(context, DBNAME, null, 1) {
         val db = this.readableDatabase
         val dataValueRead = "SELECT * FROM ApiData WHERE Id=$id"
         val result = db.rawQuery(dataValueRead, null)
-        if (result.moveToFirst()) {
+        if (result != null && result.moveToFirst()) {
             do {
                 val question = result.getString(result.getColumnIndex("Question"))
                 val answer = result.getString(result.getColumnIndex("Answer"))

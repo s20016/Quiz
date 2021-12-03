@@ -1,11 +1,13 @@
 package jp.ac.it_college.std.s20016.quiz
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.ac.it_college.std.s20016.quiz.databinding.ActivityQuizBinding
@@ -16,6 +18,8 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuizBinding
     private var layoutManager: RecyclerView.LayoutManager? = null
     private val dbHelper = DBHandler(this)
+    var alertDialog: AlertDialog? = null
+    private var quitQuiz = false
 
     // Game variables
     private var apiQuestionSize = 0
@@ -27,6 +31,7 @@ class QuizActivity : AppCompatActivity() {
     private val dataAnswers = mutableListOf<String>()
     private val dataChoices = mutableListOf<List<String>>()
     private var itemCount = String()
+    private var position = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,12 +39,39 @@ class QuizActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportActionBar?.hide()
+        backHomeDialog()
 
-        val position = intent.getStringExtra("POSITION").toString()
+        position = intent.getStringExtra("POSITION").toString()
+        binding.btnHome.setOnClickListener { alertDialog?.show() }
         itemCount = position
 
         generateQuizSet(position)
         gameOn()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        quitQuiz = true
+        question = position.toInt()
+    }
+
+    private fun backHomeDialog() {
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setTitle("Already Quitting?")
+        dialogBuilder.setMessage("Are the questions too hard for you, weakling? " +
+                "You sure you want to quit?")
+        dialogBuilder.setPositiveButton("Quit") { _: DialogInterface, _: Int ->
+            Intent (this, MainActivity::class.java).also {
+                startActivity(it)
+                finish()
+            }
+        }
+        dialogBuilder.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->}
+        alertDialog = dialogBuilder.create()
+    }
+
+    override fun onBackPressed() {
+        alertDialog?.show()
     }
 
     private fun generateQuizSet(position: String) {
@@ -48,7 +80,7 @@ class QuizActivity : AppCompatActivity() {
         apiQuestionSize = position.toInt()
 
         val selectedQuestions = id.shuffled().take(apiQuestionSize).toList()
-        Log.d("TEST SelectedQuestions: ", selectedQuestions.toString())
+        Log.d("QuizAct", "Randomized Questions: $selectedQuestions")
 
         selectedQuestions.forEach {
             val data = dbHelper.readValues(it)
@@ -88,10 +120,13 @@ class QuizActivity : AppCompatActivity() {
         intent.putExtra("MESSAGE", message)
         intent.putExtra("ITEM_COUNT", itemCount)
         startActivity(intent)
+        finish()
     }
 
     // Main Game
     private fun gameOn() {
+
+        if (quitQuiz) finish()
 
         question++
 
@@ -110,7 +145,7 @@ class QuizActivity : AppCompatActivity() {
         }
 
         // Log shuffled answers
-        Log.d("TEST: ", "Question Answer $shuffledAnswers")
+        Log.d("QuizAct", "Answer Position: $shuffledAnswers")
 
         // Assigning data to each ID
         binding.quizQuestion.text = questionQuestion
@@ -153,19 +188,23 @@ class QuizActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Log.d("OnTimeFinish: ", "User: $userChoicesInt, Data: $shuffledAnswers, ${compareAnswers()}")
-
-                if (compareAnswers()) score++
-                if (question >= apiQuestionSize) setScore() else gameOn()
+                if (!quitQuiz) {
+                    Log.d("onFinish", "User: $userChoicesInt, Data: " +
+                            "$shuffledAnswers, ${compareAnswers()}")
+                    if (compareAnswers()) score++
+                    if (question >= apiQuestionSize) setScore() else gameOn()
+                }
             }
         }; timer.start()
 
         binding.nextButton.setOnClickListener {
             timer.cancel()
-            Log.d("OnClick: ", "User: $userChoicesInt, Data: $shuffledAnswers, ${compareAnswers()}")
+            Log.d("onClick", "User: $userChoicesInt, Data: $shuffledAnswers, ${compareAnswers()}")
 
-            if (compareAnswers()) score++
-            if (question >= apiQuestionSize) setScore() else gameOn()
+            if (!quitQuiz) {
+                if (compareAnswers()) score++
+                if (question >= apiQuestionSize) setScore() else gameOn()
+            }
         }
     }
 }
