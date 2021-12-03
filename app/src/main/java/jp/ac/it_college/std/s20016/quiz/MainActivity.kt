@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private var infoDialog: AlertDialog? = null
     private var start = false
     private var positionValue: Int = 10
-    private val appVersion = BuildConfig.VERSION_NAME
     var latestVersion = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,12 +32,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         start = checkDatabase()
-        showAppInfoDialog(latestVersion)
 
         getApiVersion()
         onRefresh()
         numberPicker()
 
+        showAppInfoDialog()
         binding.btnInfo.setOnClickListener {
             infoDialog?.show()
         }
@@ -75,15 +74,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAppInfoDialog(version: String) {
+    private fun showAppInfoDialog() {
         val dialogBuilder = AlertDialog.Builder(this)
-        val apiVersion: String = if (version == "") "Need Reload" else "v$version"
-        dialogBuilder.setTitle("Welcome to Quiz II")
+        dialogBuilder.setTitle("Android Class: Quiz App")
         dialogBuilder.setMessage("""
-            Quiz II v$appVersion
-            API $apiVersion
-            
-            Author: JC Tinio (s20016)
+            Next Target Features: 
+            - Improved UI/UX
+            - Database: High Score
+            - Share to SM Function
+            - Animations
         """.trimIndent())
         dialogBuilder.setPositiveButton(null) { _: DialogInterface, _: Int -> }
         dialogBuilder.setNegativeButton("OK") { _: DialogInterface, _: Int -> }
@@ -104,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                 deleteData()
                 insertVersion(latestVersion)
                 getApiData(latestVersion)
+                showAppInfoDialog()
                 delay(3000L)
                 Toast.makeText(applicationContext, msg, Toast.LENGTH_LONG).show()
                 start = true
@@ -131,6 +131,8 @@ class MainActivity : AppCompatActivity() {
         } else updateAPI()
 
         binding.startButton.isEnabled = true
+        binding.btnInfo.isEnabled= true
+
         start = true
         return false
     }
